@@ -6,7 +6,6 @@ public:
 	int score = 0;
 	int x;
 	ScoreCubes(int initX);
-	void UpdateScore();
 	void DrawScore();
 private:
 	Rectangle cubes[3];

@@ -3,11 +3,8 @@
 ScoreCubes::ScoreCubes(int initX)
 {
 	x = initX;
-}
 
-void ScoreCubes::UpdateScore()
-{
-	for (int i = 0; i < score; i++)
+	for (int i = 0; i < 3; i++)
 	{
 		cubes[i].x = x;
 		cubes[i].y = 60 + (offset * i);

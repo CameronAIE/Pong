@@ -189,7 +189,6 @@ int main(int argc, char* argv[])
 
         if (ball.x <= 0) {
             ++player2Score.score;
-            player2Score.UpdateScore();
             ball.x = screenWidth / 2 - 10;
             ball.y = screenHeight / 2 - 10;
             if (player2Score.score == 4) {
@@ -199,7 +198,6 @@ int main(int argc, char* argv[])
         
         if (ball.x >= screenWidth - 10) {
             ++player1Score.score;
-            player1Score.UpdateScore();
             ball.x = screenWidth / 2 - 10;
             ball.y = screenHeight / 2 - 10;
             if (player1Score.score == 4) {
