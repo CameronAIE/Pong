@@ -31,17 +31,17 @@ int main(int argc, char* argv[])
     // Initialization
     //--------------------------------------------------------------------------------------
     int screenWidth = 1000;
-    int screenHeight = 800;
+    int screenHeight = 700;
 
     int racketSpeed = 200;
 
-    float ballXSpeed = 100;
-    float ballYSpeed = 100;
-
-    int p1Score = 0;
-    int p2Score = 0;
+    float ballXSpeed = 150;
+    float ballYSpeed = 150;
     
     float speedPerBump = 1.5;
+
+    bool p1win = false;
+    bool p2win = false;
 
     Rectangle player1 { 50, screenHeight / 2 - 60, 20 , 120};
     Rectangle player2 { screenWidth - 70, screenHeight / 2 - 60, 20 , 120 };
@@ -83,11 +83,30 @@ int main(int argc, char* argv[])
         }
 
         //move rackets on screen if they went off
+        if(player1.y < 0)
+        {
+            player1.y = 0;
+        }
 
+        if (player1.y > screenHeight - 120) {
+            player1.y = screenHeight - 120;
+        }
+
+        if (player2.y < 0)
+        {
+            player2.y = 0;
+        }
+
+        if (player2.y > screenHeight - 120) {
+            player2.y = screenHeight - 120;
+        }
 
         //move ball
-        ball.y -= ballYSpeed * deltaTime;
-        ball.x += ballXSpeed * deltaTime;
+        if (p1win == false && p2win == false)
+        {
+            ball.y -= ballYSpeed * deltaTime;
+            ball.x += ballXSpeed * deltaTime;
+        }
 
         //check ball colisions and change direction and speed accordingly
         if (ball.y <= 0)
@@ -169,17 +188,23 @@ int main(int argc, char* argv[])
         }
 
         if (ball.x <= 0) {
-            player2Score.score + 1;
+            ++player2Score.score;
             player2Score.UpdateScore();
             ball.x = screenWidth / 2 - 10;
             ball.y = screenHeight / 2 - 10;
+            if (player2Score.score == 4) {
+                p2win = true;
+            }
         }
         
         if (ball.x >= screenWidth - 10) {
-            player1Score.score + 1;
+            ++player1Score.score;
             player1Score.UpdateScore();
             ball.x = screenWidth / 2 - 10;
             ball.y = screenHeight / 2 - 10;
+            if (player1Score.score == 4) {
+                p1win = true;
+            }
         }
         //----------------------------------------------------------------------------------
 
@@ -189,16 +214,23 @@ int main(int argc, char* argv[])
 
         ClearBackground(BLACK);
 
-        player1Score.DrawScore();
-        player2Score.DrawScore();
+        if (p1win == false && p2win == false)
+        {
+            player1Score.DrawScore();
+            player2Score.DrawScore();
 
-        DrawRectangle(player1.x, player1.y, player1.width, player1.height, RAYWHITE);
+            DrawRectangle(player1.x, player1.y, player1.width, player1.height, RAYWHITE);
 
-        DrawRectangle(player2.x, player2.y, player2.width, player2.height, RAYWHITE);
+            DrawRectangle(player2.x, player2.y, player2.width, player2.height, RAYWHITE);
 
-        DrawRectangle(ball.x, ball.y, ball.width, ball.height, RAYWHITE);
-
-        //DrawText("Congrats! You created your first window!", 190, 200, 20, RAYWHITE);
+            DrawRectangle(ball.x, ball.y, ball.width, ball.height, RAYWHITE);
+        }
+        else if (p1win == true) {
+            DrawText("Congrats! P1 you are the winner", 190, 300, 20, RAYWHITE);
+        }
+        else {
+            DrawText("Congrats! P2 you are the winner", 190, 300, 20, RAYWHITE);
+        }
 
         EndDrawing();
         //----------------------------------------------------------------------------------
