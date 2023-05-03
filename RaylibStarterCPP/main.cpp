@@ -35,8 +35,8 @@ int main(int argc, char* argv[])
 
     int racketSpeed = 200;
 
-    float ballXSpeed = 150;
-    float ballYSpeed = 150;
+    float ballXSpeed = 200;
+    float ballYSpeed = 200;
     
     float speedPerBump = 1.5;
 
