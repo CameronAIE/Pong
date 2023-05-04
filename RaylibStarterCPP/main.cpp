@@ -151,10 +151,6 @@ int main(int argc, char* argv[])
         }
 
         if (CheckCollisionRecs(player1, ball)) {
-            ballSpeed.x *= -1;
-
-
-            //my way
             ///this section changes the direction of the ball so that it will go in a certain direction depending on where it hits the paddle
             float ballPaddleDiffY = (player1.y + player1.height / 2) - (ball.y + ball.height / 2);
             float ballPaddleDiffX = (ball.x + ball.width / 2) - (player1.x + player1.width / 2);
@@ -174,41 +170,6 @@ int main(int argc, char* argv[])
             //we put the origanal speed back on ballSpeed with the new direction
             ballSpeed.y *= origanalMagnitude;
             ballSpeed.x *= origanalMagnitude;
-
-            /*float angle = sin(ballPaddleDiffX / ballPaddleDiffY);
-
-            
-            |\
-            | \
-            |  \ <----------this angle
-            |---\
-            |    \
-            |     \
-            |      \
-            |       \
-            |        \
-            ----------
-                  ^this length = ballPaddleDiffX
-*/
-
-
-
-            //chat gpt way
-            /*
-            float ballPaddleDiff = (ball.y + ball.height / 2) - (player1.y + player1.height / 2);
-            float ballSpeedModule = sqrt(ballXSpeed * ballXSpeed + ballYSpeed * ballYSpeed);
-
-            float ballAngle = ballPaddleDiff * .8f;
-
-            ballXSpeed = ballSpeedModule * cos(ballAngle);
-            ballYSpeed = ballSpeedModule * sin(ballAngle);
-
-            ballXSpeed /= ballSpeedModule;
-            ballYSpeed /= ballSpeedModule;
-            ballYSpeed *= 200;
-            ballXSpeed *= 200;
-            */
-            
             
             if (ballSpeed.y < 0)
             {
@@ -227,8 +188,7 @@ int main(int argc, char* argv[])
             }
         }
 
-        if (CheckCollisionRecs(player2, ball)) {
-            ballSpeed.x *= -1;
+        if (CheckCollisionRecs(player2, ball)) {           
             
             float ballPaddleDiffY = (player2.y + player2.height / 2) - (ball.y + ball.height / 2);
             float ballPaddleDiffX = (ball.x + ball.width / 2) - (player2.x + player2.width / 2);
