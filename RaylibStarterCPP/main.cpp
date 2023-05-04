@@ -35,8 +35,7 @@ int main(int argc, char* argv[])
 
     int racketSpeed = 200;
 
-    float ballXSpeed = 200;
-    float ballYSpeed = 200;
+    Vector2 ballSpeed{200, 200};
     
     float speedPerBump = 1.5;
 
@@ -104,86 +103,164 @@ int main(int argc, char* argv[])
         //move ball
         if (p1win == false && p2win == false)
         {
-            ball.y -= ballYSpeed * deltaTime;
-            ball.x += ballXSpeed * deltaTime;
+            ball.y -= ballSpeed.y * deltaTime;
+            ball.x += ballSpeed.x * deltaTime;
         }
 
         //check ball colisions and change direction and speed accordingly
         if (ball.y <= 0)
         {
-            ballYSpeed -= ballYSpeed * 2;
-            if (ballYSpeed < 0)
+            ballSpeed.y *= -1;
+            
+            //whenever you see this bit it means the ball is speeding up
+            if (ballSpeed.y < 0)
             {
-                ballYSpeed -= speedPerBump;
+                ballSpeed.y -= speedPerBump;
             }
             else {
-                ballYSpeed += speedPerBump;
+                ballSpeed.y += speedPerBump;
             }
 
-            if (ballXSpeed < 0)
+            if (ballSpeed.x < 0)
             {
-                ballXSpeed -= speedPerBump;
+                ballSpeed.x -= speedPerBump;
             }
             else {
-                ballXSpeed += speedPerBump;
+                ballSpeed.x += speedPerBump;
             }
         }
 
         if (ball.y >= screenHeight - 20)
         {
-            ballYSpeed -= ballYSpeed * 2;
-            if (ballYSpeed < 0)
+            ballSpeed.y *= -1;
+            if (ballSpeed.y < 0)
             {
-                ballYSpeed -= speedPerBump;
+                ballSpeed.y -= speedPerBump;
             }
             else {
-                ballYSpeed += speedPerBump;
+                ballSpeed.y += speedPerBump;
             }
 
-            if (ballXSpeed < 0)
+            if (ballSpeed.x < 0)
             {
-                ballXSpeed -= speedPerBump;
+                ballSpeed.x -= speedPerBump;
             }
             else {
-                ballXSpeed += speedPerBump;
+                ballSpeed.x += speedPerBump;
             }
         }
 
         if (CheckCollisionRecs(player1, ball)) {
-            ballXSpeed -= ballXSpeed * 2;
-            if (ballYSpeed < 0)
+            ballSpeed.x *= -1;
+
+
+            //my way
+            ///this section changes the direction of the ball so that it will go in a certain direction depending on where it hits the paddle
+            float ballPaddleDiffY = (player1.y + player1.height / 2) - (ball.y + ball.height / 2);
+            float ballPaddleDiffX = (ball.x + ball.width / 2) - (player1.x + player1.width / 2);
+
+            float origanalMagnitude = sqrt(ballSpeed.x * ballSpeed.x + ballSpeed.y * ballSpeed.y);
+
+            //we set ballSpeed to the distances here becuase when normailized they become the direction
+            ballSpeed.y = ballPaddleDiffY;
+            ballSpeed.x = ballPaddleDiffX;
+
+            float triangleMagnitude = sqrt(ballSpeed.x * ballSpeed.x + ballSpeed.y * ballSpeed.y);
+
+            //mormalizing ballSpeed
+            ballSpeed.y /= triangleMagnitude;
+            ballSpeed.x /= triangleMagnitude;
+
+            //we put the origanal speed back on ballSpeed with the new direction
+            ballSpeed.y *= origanalMagnitude;
+            ballSpeed.x *= origanalMagnitude;
+
+            /*float angle = sin(ballPaddleDiffX / ballPaddleDiffY);
+
+            
+            |\
+            | \
+            |  \ <----------this angle
+            |---\
+            |    \
+            |     \
+            |      \
+            |       \
+            |        \
+            ----------
+                  ^this length = ballPaddleDiffX
+*/
+
+
+
+            //chat gpt way
+            /*
+            float ballPaddleDiff = (ball.y + ball.height / 2) - (player1.y + player1.height / 2);
+            float ballSpeedModule = sqrt(ballXSpeed * ballXSpeed + ballYSpeed * ballYSpeed);
+
+            float ballAngle = ballPaddleDiff * .8f;
+
+            ballXSpeed = ballSpeedModule * cos(ballAngle);
+            ballYSpeed = ballSpeedModule * sin(ballAngle);
+
+            ballXSpeed /= ballSpeedModule;
+            ballYSpeed /= ballSpeedModule;
+            ballYSpeed *= 200;
+            ballXSpeed *= 200;
+            */
+            
+            
+            if (ballSpeed.y < 0)
             {
-                ballYSpeed -= speedPerBump;
+                ballSpeed.y -= speedPerBump;
             }
             else {
-                ballYSpeed += speedPerBump;
+                ballSpeed.y += speedPerBump;
             }
 
-            if (ballXSpeed < 0)
+            if (ballSpeed.x < 0)
             {
-                ballXSpeed -= speedPerBump;
+                ballSpeed.x -= speedPerBump;
             }
             else {
-                ballXSpeed += speedPerBump;
+                ballSpeed.x += speedPerBump;
             }
         }
 
         if (CheckCollisionRecs(player2, ball)) {
-            ballXSpeed -= ballXSpeed * 2;
-            if (ballYSpeed < 0)
+            ballSpeed.x *= -1;
+            
+            float ballPaddleDiffY = (player2.y + player2.height / 2) - (ball.y + ball.height / 2);
+            float ballPaddleDiffX = (ball.x + ball.width / 2) - (player2.x + player2.width / 2);
+
+            float origanalMagnitude = sqrt(ballSpeed.x * ballSpeed.x + ballSpeed.y * ballSpeed.y);
+
+            ballSpeed.y = ballPaddleDiffY;
+            ballSpeed.x = ballPaddleDiffX;
+
+            float triangleMagnitude = sqrt(ballSpeed.x * ballSpeed.x + ballSpeed.y * ballSpeed.y);
+
+            ballSpeed.y /= triangleMagnitude;
+            ballSpeed.x /= triangleMagnitude;
+
+            ballSpeed.y *= origanalMagnitude;
+            ballSpeed.x *= origanalMagnitude;
+            
+            
+            if (ballSpeed.y < 0)
             {
-                ballYSpeed -= speedPerBump;
+                ballSpeed.y -= speedPerBump;
             }
             else {
-                ballYSpeed += speedPerBump;
+                ballSpeed.y += speedPerBump;
             }
 
-            if (ballXSpeed < 0)
+            if (ballSpeed.x < 0)
             {
-                ballXSpeed -= speedPerBump;
+                ballSpeed.x -= speedPerBump;
             }
             else {
-                ballXSpeed += speedPerBump;
+                ballSpeed.x += speedPerBump;
             }
         }
 
