@@ -33,11 +33,16 @@ int main(int argc, char* argv[])
     int screenWidth = 1000;
     int screenHeight = 700;
 
-    int racketSpeed = 200;
+    bool started = false;
+
+    bool twoPlayer = false;
+    bool twoPlayerHover = true;
+
+    int racketSpeed = 275;
 
     Vector2 ballSpeed{200, 200};
     
-    float speedPerBump = 1.5;
+    float speedPerBump = 2.5;
 
     bool p1win = false;
     bool p2win = false;
@@ -64,6 +69,209 @@ int main(int argc, char* argv[])
         //get the deltaTime for this frame
         float deltaTime = GetFrameTime();
 
+        if (started == false) 
+        {
+            if (IsKeyPressed(KEY_ENTER))
+            {
+                if (twoPlayerHover == true) {
+                    twoPlayer = true;
+                }
+                started = true;
+            }
+
+            if (IsKeyPressed(KEY_UP))
+            {
+                if (twoPlayerHover) {
+                    twoPlayerHover = false;
+                }
+                else {
+                    twoPlayerHover = true;
+                }
+            }
+        }
+
+
+        if (!twoPlayer && started) {
+            //check input for all rackets
+            if (ball.y + ball.height / 2 > player2.y + player2.height / 2) {
+                player2.y += racketSpeed * deltaTime;
+            }
+            
+            if (ball.y + ball.height / 2 < player2.y + player2.height / 2) {
+                player2.y -= racketSpeed * deltaTime;
+            }            
+
+            if (IsKeyDown(KEY_S)) {
+                player1.y += racketSpeed * deltaTime;
+            }
+
+            if (IsKeyDown(KEY_W)) {
+                player1.y -= racketSpeed * deltaTime;
+            }
+
+            //move rackets on screen if they went off
+            if (player1.y < 0)
+            {
+                player1.y = 0;
+            }
+
+            if (player1.y > screenHeight - 120) {
+                player1.y = screenHeight - 120;
+            }
+
+            if (player2.y < 0)
+            {
+                player2.y = 0;
+            }
+
+            if (player2.y > screenHeight - 120) {
+                player2.y = screenHeight - 120;
+            }
+
+            //move ball
+            if (p1win == false && p2win == false)
+            {
+                ball.y -= ballSpeed.y * deltaTime;
+                ball.x += ballSpeed.x * deltaTime;
+            }
+
+            //check ball colisions and change direction and speed accordingly
+            if (ball.y <= 0)
+            {
+                ballSpeed.y *= -1;
+
+                //whenever you see this bit it means the ball is speeding up
+                if (ballSpeed.y < 0)
+                {
+                    ballSpeed.y -= speedPerBump;
+                }
+                else {
+                    ballSpeed.y += speedPerBump;
+                }
+
+                if (ballSpeed.x < 0)
+                {
+                    ballSpeed.x -= speedPerBump;
+                }
+                else {
+                    ballSpeed.x += speedPerBump;
+                }
+            }
+
+            if (ball.y >= screenHeight - 20)
+            {
+                ballSpeed.y *= -1;
+                if (ballSpeed.y < 0)
+                {
+                    ballSpeed.y -= speedPerBump;
+                }
+                else {
+                    ballSpeed.y += speedPerBump;
+                }
+
+                if (ballSpeed.x < 0)
+                {
+                    ballSpeed.x -= speedPerBump;
+                }
+                else {
+                    ballSpeed.x += speedPerBump;
+                }
+            }
+
+            if (CheckCollisionRecs(player1, ball)) {
+                ///this section changes the direction of the ball so that it will go in a certain direction depending on where it hits the paddle
+                float ballPaddleDiffY = (player1.y + player1.height / 2) - (ball.y + ball.height / 2);
+                float ballPaddleDiffX = (ball.x + ball.width / 2) - (player1.x + player1.width / 2);
+
+                float origanalMagnitude = sqrt(ballSpeed.x * ballSpeed.x + ballSpeed.y * ballSpeed.y);
+
+                //we set ballSpeed to the distances here becuase when normailized they become the direction
+                ballSpeed.y = ballPaddleDiffY;
+                ballSpeed.x = ballPaddleDiffX;
+
+                float triangleMagnitude = sqrt(ballSpeed.x * ballSpeed.x + ballSpeed.y * ballSpeed.y);
+
+                //mormalizing ballSpeed
+                ballSpeed.y /= triangleMagnitude;
+                ballSpeed.x /= triangleMagnitude;
+
+                //we put the origanal speed back on ballSpeed with the new direction
+                ballSpeed.y *= origanalMagnitude;
+                ballSpeed.x *= origanalMagnitude;
+
+                if (ballSpeed.y < 0)
+                {
+                    ballSpeed.y -= speedPerBump;
+                }
+                else {
+                    ballSpeed.y += speedPerBump;
+                }
+
+                if (ballSpeed.x < 0)
+                {
+                    ballSpeed.x -= speedPerBump;
+                }
+                else {
+                    ballSpeed.x += speedPerBump;
+                }
+            }
+
+            if (CheckCollisionRecs(player2, ball)) {
+
+                float ballPaddleDiffY = (player2.y + player2.height / 2) - (ball.y + ball.height / 2);
+                float ballPaddleDiffX = (ball.x + ball.width / 2) - (player2.x + player2.width / 2);
+
+                float origanalMagnitude = sqrt(ballSpeed.x * ballSpeed.x + ballSpeed.y * ballSpeed.y);
+
+                ballSpeed.y = ballPaddleDiffY;
+                ballSpeed.x = ballPaddleDiffX;
+
+                float triangleMagnitude = sqrt(ballSpeed.x * ballSpeed.x + ballSpeed.y * ballSpeed.y);
+
+                ballSpeed.y /= triangleMagnitude;
+                ballSpeed.x /= triangleMagnitude;
+
+                ballSpeed.y *= origanalMagnitude;
+                ballSpeed.x *= origanalMagnitude;
+
+
+                if (ballSpeed.y < 0)
+                {
+                    ballSpeed.y -= speedPerBump;
+                }
+                else {
+                    ballSpeed.y += speedPerBump;
+                }
+
+                if (ballSpeed.x < 0)
+                {
+                    ballSpeed.x -= speedPerBump;
+                }
+                else {
+                    ballSpeed.x += speedPerBump;
+                }
+            }
+
+            if (ball.x <= 0) {
+                ++player2Score.score;
+                ball.x = screenWidth / 2 - 10;
+                ball.y = screenHeight / 2 - 10;
+                if (player2Score.score == 4) {
+                    p2win = true;
+                }
+            }
+
+            if (ball.x >= screenWidth - 10) {
+                ++player1Score.score;
+                ball.x = screenWidth / 2 - 10;
+                ball.y = screenHeight / 2 - 10;
+                if (player1Score.score == 4) {
+                    p1win = true;
+                }
+            }
+        }
+        else if (started)
+        {
         //check input for all rackets
         if (IsKeyDown(KEY_DOWN)) {
             player2.y += racketSpeed * deltaTime;
@@ -82,7 +290,7 @@ int main(int argc, char* argv[])
         }
 
         //move rackets on screen if they went off
-        if(player1.y < 0)
+        if (player1.y < 0)
         {
             player1.y = 0;
         }
@@ -111,7 +319,7 @@ int main(int argc, char* argv[])
         if (ball.y <= 0)
         {
             ballSpeed.y *= -1;
-            
+
             //whenever you see this bit it means the ball is speeding up
             if (ballSpeed.y < 0)
             {
@@ -170,7 +378,7 @@ int main(int argc, char* argv[])
             //we put the origanal speed back on ballSpeed with the new direction
             ballSpeed.y *= origanalMagnitude;
             ballSpeed.x *= origanalMagnitude;
-            
+
             if (ballSpeed.y < 0)
             {
                 ballSpeed.y -= speedPerBump;
@@ -188,8 +396,8 @@ int main(int argc, char* argv[])
             }
         }
 
-        if (CheckCollisionRecs(player2, ball)) {           
-            
+        if (CheckCollisionRecs(player2, ball)) {
+
             float ballPaddleDiffY = (player2.y + player2.height / 2) - (ball.y + ball.height / 2);
             float ballPaddleDiffX = (ball.x + ball.width / 2) - (player2.x + player2.width / 2);
 
@@ -205,8 +413,8 @@ int main(int argc, char* argv[])
 
             ballSpeed.y *= origanalMagnitude;
             ballSpeed.x *= origanalMagnitude;
-            
-            
+
+
             if (ballSpeed.y < 0)
             {
                 ballSpeed.y -= speedPerBump;
@@ -232,7 +440,7 @@ int main(int argc, char* argv[])
                 p2win = true;
             }
         }
-        
+
         if (ball.x >= screenWidth - 10) {
             ++player1Score.score;
             ball.x = screenWidth / 2 - 10;
@@ -240,6 +448,7 @@ int main(int argc, char* argv[])
             if (player1Score.score == 4) {
                 p1win = true;
             }
+        }
         }
         //----------------------------------------------------------------------------------
 
@@ -249,22 +458,42 @@ int main(int argc, char* argv[])
 
         ClearBackground(BLACK);
 
-        if (p1win == false && p2win == false)
+        if (started == false) {
+            DrawText("PONG", 150, 100, 250, RAYWHITE);
+            DrawText("press up for other option", 300, 450, 20, RAYWHITE);
+
+            if (twoPlayerHover == true)
+            {
+                DrawText("<2 Player>", 300, 550, 20, RAYWHITE);
+            }
+            else {
+                DrawText("<Bot>", 300, 550, 20, RAYWHITE);
+            }
+
+        }
+        else 
         {
-            player1Score.DrawScore();
-            player2Score.DrawScore();
 
-            DrawRectangle(player1.x, player1.y, player1.width, player1.height, RAYWHITE);
+            if (p1win == false && p2win == false)
+            {
+                player1Score.DrawScore();
+                player2Score.DrawScore();
 
-            DrawRectangle(player2.x, player2.y, player2.width, player2.height, RAYWHITE);
+                DrawRectangle(player1.x, player1.y, player1.width, player1.height, RAYWHITE);
 
-            DrawRectangle(ball.x, ball.y, ball.width, ball.height, RAYWHITE);
-        }
-        else if (p1win == true) {
-            DrawText("Congrats! P1 you are the winner", 190, 300, 20, RAYWHITE);
-        }
-        else {
-            DrawText("Congrats! P2 you are the winner", 190, 300, 20, RAYWHITE);
+                DrawRectangle(player2.x, player2.y, player2.width, player2.height, RAYWHITE);
+
+                DrawRectangle(ball.x, ball.y, ball.width, ball.height, RAYWHITE);
+            }
+            else if (p1win == true) {
+                DrawText("Congrats! P1 you are the winner", 190, 300, 20, RAYWHITE);
+            }
+            else if (twoPlayer) {
+                DrawText("Congrats! P2 you are the winner", 190, 300, 20, RAYWHITE);
+            }
+            else {
+                DrawText("YOU LOSE", 190, 300, 20, RAYWHITE);
+            }
         }
 
         EndDrawing();
